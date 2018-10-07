@@ -38,17 +38,13 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
       },
       triggered_by: "curl"
     },
-    json: true 
-      // JSON stringifies the body automatically
+    json: true
   }
 
   request.post(options, function(err, res, body) {
     callback(null, {
-      text: `Command redirect to Bitrise!`,
-      attachments: [
-        // You can customize your messages with attachments.
-        // See https://api.slack.com/docs/message-attachments for more info.
-      ]
+      text: `Send cURL request to Bitrise!`,
+      attachments: []
     });
   })  
 };
