@@ -39,8 +39,6 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
     json: true
   }
 
-  console.log(text);
-
   request.post(options, function(err, res, body) {
     var message = `Send cURL request to Bitrise!`;
 
