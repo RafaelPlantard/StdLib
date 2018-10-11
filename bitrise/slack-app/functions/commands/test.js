@@ -22,41 +22,23 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
     text = 'master';
   }
 
-  const options = {
-    url: 'https://app.bitrise.io/app//build/start.json',
-    method: 'POST',
-    body: {
-      hook_info: { 
-        type: "bitrise",
-        build_trigger_token: ""
-      },
-      build_params: {
-        branch: text,
-        workflow_id: "test"
-      },
-      triggered_by: "curl"
-    },
-    json: true
-  }
-
-  request.post(options, function(err, res, body) {
-    var message = `Send cURL request to Bitrise!`;
-
-    if (body.error_msg != undefined) {
-      message = body.error_msg;
-    }
-
-    if (body.status == 'error' && body.message != undefined) {
-      message = body.message;
-    }
-
-    if (body.status == 'ok' && body.build_number != undefined && body.build_url != undefined) {
-      message = "Build " + body.build_number + " scheduled. Follow here: " + body.build_url;
-    }
-
-    callback(null, {
-      text: message,
-      attachments: []
-    });
-  })  
+  callback(null, {
+    "text": "Which workflow will you run now?",
+    "attachments": [
+        {
+            "fallback": "You are unable to choose a worflow",
+            "callback_id": "workflow_id",
+            "color": "#3bc3a3",
+            "attachment_type": "default",
+            "actions": [
+                {
+                    "name": "workflow",
+                    "text": "Test",
+                    "type": "button",
+                    "value": `test|${text}`
+                }
+            ]
+        }
+    ]
+})  
 };
