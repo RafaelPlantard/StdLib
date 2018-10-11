@@ -17,11 +17,9 @@ const request = require('request');
 * @param {string} botToken The bot token for the Slack bot you have activated
 * @returns {object}
 */
-module.exports = (user, channel, text = '', command = {}, botToken = null, callback) => {
-  var branch = "master";
-
-  if (text.length > 0) {
-    branch = text;
+module.exports = (user, channel, text = 'master', command = {}, botToken = null, callback) => {
+  if (text.trim().length == 0) {
+    text = 'master';
   }
 
   const options = {
@@ -33,7 +31,7 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
         build_trigger_token: ""
       },
       build_params: {
-        branch: branch,
+        branch: text,
         workflow_id: "test"
       },
       triggered_by: "curl"
@@ -41,9 +39,25 @@ module.exports = (user, channel, text = '', command = {}, botToken = null, callb
     json: true
   }
 
+  console.log(text);
+
   request.post(options, function(err, res, body) {
+    var message = `Send cURL request to Bitrise!`;
+
+    if (body.error_msg != undefined) {
+      message = body.error_msg;
+    }
+
+    if (body.status == 'error' && body.message != undefined) {
+      message = body.message;
+    }
+
+    if (body.status == 'ok' && body.build_number != undefined && body.build_url != undefined) {
+      message = "Build " + body.build_number + " scheduled. Follow here: " + body.build_url;
+    }
+
     callback(null, {
-      text: `Send cURL request to Bitrise!`,
+      text: message,
       attachments: []
     });
   })  
