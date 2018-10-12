@@ -18,19 +18,14 @@ const request = require('request');
 * @returns {object}
 */
 module.exports = (user, channel, action = {}, botToken = null, callback) => {
-  var branch = "master";
-  var workflow_id = "test";
-  let app_slug = '';
+  var value = { branch: 'master', app_slug: '', workflow_id: 'test' }
 
   if (action.actions[0].value != undefined) {
-    let values = action.actions[0].value.split("|");
-
-    workflow_id = values[0];
-    branch = values[1];
+    value = JSON.parse(action.actions[0].value);
   }
 
   const options = {
-    url: `https://app.bitrise.io/app/${app_slug}/build/start.json`,
+    url: `https://app.bitrise.io/app/${value.app_slug}/build/start.json`,
     method: 'POST',
     body: {
       hook_info: { 
@@ -38,8 +33,8 @@ module.exports = (user, channel, action = {}, botToken = null, callback) => {
         build_trigger_token: ""
       },
       build_params: {
-        branch: branch,
-        workflow_id: workflow_id
+        branch: value.branch,
+        workflow_id: value.workflow_id
       },
       triggered_by: "curl"
     },
@@ -67,7 +62,7 @@ module.exports = (user, channel, action = {}, botToken = null, callback) => {
             {
               type: "button",
               text: "View App",
-              url: `https://app.bitrise.io/app/${app_slug}`
+              url: `https://app.bitrise.io/app/${value.app_slug}`
             },
             {
               type: "button",
