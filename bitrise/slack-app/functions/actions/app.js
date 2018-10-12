@@ -26,12 +26,12 @@ module.exports = (user, channel, action = {}, botToken = null, callback) => {
   }
 
   const options = {
-    url: `https://api.bitrise.io/v0.1/apps/${value.app_slug}`,
+    url: `https://api.bitrise.io/v0.1/apps/${value.app_slug}/bitrise.yml`,
     method: 'GET',
     headers: {
       Authorization: 'token ***REMOVED***'
     },
-    json: false
+    json: true
   };
 
   request.get(options, function(err, res, body) {
@@ -47,16 +47,12 @@ module.exports = (user, channel, action = {}, botToken = null, callback) => {
     }
 
     if (body != undefined) {
-      let yamlString = yaml.load(body);
-      let jsonFromYaml = JSON.parse(yamlString);
-      let workflows = Object.keys(jsonFromYaml.workflows);
+      let yamlString = yaml.safeLoad(body);
+      let workflows = Object.keys(yamlString.workflows);
 
-      console.log(yamlString);
-      console.log(jsonFromYaml);
+      message = "Which workflow will you run now?";
 
-      message = "Build " + body.build_number + " scheduled.";
-
-      if (workflows.count > 0) {
+      if (workflows.length > 0) {
         let actions = workflows.map(workflow => {
           var valueWithWorkflow = value;
           valueWithWorkflow['workflow_id'] = workflow;
