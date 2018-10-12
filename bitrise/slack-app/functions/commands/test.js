@@ -22,23 +22,58 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
     text = 'master';
   }
 
-  callback(null, {
-    "text": "Which workflow will you run now?",
-    "attachments": [
-        {
-            "fallback": "You are unable to choose a worflow",
-            "callback_id": "workflow_id",
-            "color": "#3bc3a3",
-            "attachment_type": "default",
-            "actions": [
-                {
-                    "name": "workflow",
-                    "text": "Test",
-                    "type": "button",
-                    "value": `test|${text}`
-                }
-            ]
+  const options = {
+    url: 'https://api.bitrise.io/v0.1/apps?sort_by=last_build_at',
+    method: 'GET',
+    headers: {
+      Authorization: 'token ***REMOVED***'
+    },
+    json: true
+  };
+
+  request.get(options, function(err, res, body) {
+    var message = 'Send cURL request to Bitrise!';
+    var attachments = [];
+
+    if (body.error_msg != undefined) {
+      message = body.error_msg;
+    }
+
+    if (body.status == 'error' && body.message != undefined) {
+      message = body.message;
+    }
+
+    var actions = [];
+
+    if (body.data != undefined) {
+      actions = body.data.map(app => { 
+        return {
+          name: 'app',
+          text: app.title,
+          type: 'button',
+          value: JSON.stringify({ branch: text, app_slug: app.slug })
         }
-    ]
-})  
+      });
+    }
+
+    if (actions.length == 0) {
+      return callback(null, {
+        'text': message,
+        'attachments': attachments
+      })
+    }
+
+    callback(null, {
+      "text": "Which app will you run now?",
+      "attachments": [
+        {
+          "fallback": "You are unable to choose an app",
+          "callback_id": "app_id",
+          "color": "#492f5c",
+          "attachment_type": "default",
+          "actions": actions
+        }
+      ]
+    });
+  });
 };
