@@ -11,6 +11,10 @@ function formatTeamKey(teamId) {
   return `SLACK::${process.env.SLACK_APP_NAME}::${teamId}`;
 };
 
+function formatBitriseAppToken(teamId) {
+  return `BITRISE_APP_TOKEN::${process.env.SLACK_APP_NAME}::${teamId}`;
+}
+
 const CACHE = {};
 
 module.exports = {
@@ -29,6 +33,25 @@ module.exports = {
     lib.utils.storage.get(formatTeamKey(teamId), (err, value) => {
       if (!err) {
         CACHE[teamId] = value;
+      }
+      callback(err, value);
+    });
+  },
+  setBitriseToken: (teamId, value, callback) => {
+    lib.utils.storage.set(formatBitriseAppToken(teamId), value, (err, value) => {
+      if (!err) {
+        CACHE[`${teamId}.bitrise`] = value;
+      }
+      callback(err, value);
+    });
+  },
+  getBitriseToken: (teamId, callback) => {
+    if (CACHE[`${teamId}.bitrise`]) {
+      return callback(null, CACHE[teamId]);
+    }
+    lib.utils.storage.get(formatBitriseAppToken(teamId), (err, value) => {
+      if (!err) {
+        CACHE[`${teamId}.bitrise`] = value;
       }
       callback(err, value);
     });
