@@ -1,6 +1,7 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 
 const getBotToken = require('../../helpers/get_bot_token.js');
+const message = require('../../utils/message.js');
 const update = require('../../utils/update_message.js');
 
 /**
@@ -54,11 +55,15 @@ module.exports = (context, callback) => {
     };
   }
 
-  if (!action.actions || !action.actions.length) {
-    return callback(null, {error: 'No actions specified'});
-  }
+  let name;
 
-  let name = action.actions[0].name;
+  if (action.type == 'dialog_submission' || action.type == 'dialog_cancellation') {
+    name = action.callback_id;
+  } else if (!action.actions || !action.actions.length) {
+    return callback(null, {error: 'No actions specified'});
+  } else {
+    name = action.actions[0].name;
+  }
 
   getBotToken(action.team.id, (err, botToken) => {
 
@@ -78,24 +83,46 @@ module.exports = (context, callback) => {
           if (result && result.error && result.error.type === 'ClientError') {
             callback(err);
           } else {
+            if (action.message_ts) {
+              update(
+                botToken,
+                action.channel.id,
+                action.message_ts,
+                {
+                  text: err.message
+                },
+                callback
+              );
+            } else {
+              message(
+                botToken,
+                action.channel.id,
+                {
+                  text: err.message
+                },
+                callback
+              );
+            }
+            
+          }
+        } else {
+          if (action.message_ts) {
             update(
               botToken,
               action.channel.id,
               action.message_ts,
-              {
-                text: err.message
-              },
+              result,
+              callback
+            );
+          } else {
+            message(
+              botToken,
+              action.channel.id,
+              result,
               callback
             );
           }
-        } else {
-          update(
-            botToken,
-            action.channel.id,
-            action.message_ts,
-            result,
-            callback
-          );
+          
         }
       }
     );
