@@ -1,6 +1,7 @@
 const lib = require('lib')({token: process.env.STDLIB_TOKEN});
 const getBotToken = require('../../helpers/get_bot_token.js');
 const message = require('../../utils/message.js');
+const dialog = require('../../utils/dialog.js');
 /**
 * Slack Slash Command Handler:
 *   This function receives slash commands from Slack and dispatches
@@ -46,6 +47,14 @@ module.exports = (context, callback) => {
             },
             callback
           );
+        } else if (result.dialog) {
+          dialog(
+            botToken,
+            command.channel_id,
+            command.trigger_id,
+            result.dialog,
+            callback
+          )
         } else {
           message(
             botToken,
