@@ -44,9 +44,7 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
     };
 
     if (!value) {
-      callback(null, setBitriseAppTokenDialog);
-
-      return;
+      return callback(null, setBitriseAppTokenDialog);
     }
 
     const options = {

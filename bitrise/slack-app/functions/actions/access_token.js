@@ -18,8 +18,15 @@ const request = require('request');
 * @returns {object}
 */
 module.exports = (user, channel, action = {}, botToken = null, callback) => {
+  if (action.type == 'dialog_cancellation') {
+    return callback(null, {
+      text: 'No token provided for *Personal access tokens (BETA)*.',
+      attachments: []
+    });
+  }
+
   callback(null, {
-    text: 'No token provided for *Personal access tokens (BETA)*.',
+    text: '*Personal access tokens (BETA)* updated.',
     attachments: []
   });
 };
