@@ -15,6 +15,10 @@ function formatBitriseAppToken(teamId) {
   return `BITRISE_APP_TOKEN::${process.env.SLACK_APP_NAME}::${teamId}`;
 }
 
+function formatBitriseTriggerToken(teamId, appSlug) {
+  return `BITRISE_TRIGGER_TOKEN::${process.env.SLACK_APP_NAME}::${teamId}`;
+}
+
 const CACHE = {};
 
 module.exports = {
@@ -37,21 +41,40 @@ module.exports = {
       callback(err, value);
     });
   },
-  setBitriseToken: (teamId, value, callback) => {
+  setBitriseAppToken: (teamId, value, callback) => {
     lib.utils.storage.set(formatBitriseAppToken(teamId), value, (err, value) => {
       if (!err) {
-        CACHE[`${teamId}.bitrise`] = value;
+        CACHE[`${teamId}.bitrise_app_token`] = value;
       }
       callback(err, value);
     });
   },
-  getBitriseToken: (teamId, callback) => {
-    if (CACHE[`${teamId}.bitrise`]) {
+  getBitriseAppToken: (teamId, callback) => {
+    if (CACHE[`${teamId}.bitrise_app_token`]) {
       return callback(null, CACHE[teamId]);
     }
     lib.utils.storage.get(formatBitriseAppToken(teamId), (err, value) => {
       if (!err) {
-        CACHE[`${teamId}.bitrise`] = value;
+        CACHE[`${teamId}.bitrise_app_token`] = value;
+      }
+      callback(err, value);
+    });
+  },
+  setBitriseTriggerToken: (teamId, value, callback) => {
+    lib.utils.storage.set(formatBitriseTriggerToken(teamId), value, (err, value) => {
+      if (!err) {
+        CACHE[`${teamId}.bitrise_trigger_token`] = value;
+      }
+      callback(err, value);
+    });
+  },
+  getBitriseTriggerToken: (teamId, callback) => {
+    if (CACHE[`${teamId}.bitrise_trigger_token`]) {
+      return callback(null, CACHE[teamId]);
+    }
+    lib.utils.storage.get(formatBitriseTriggerToken(teamId), (err, value) => {
+      if (!err) {
+        CACHE[`${teamId}.bitrise_trigger_token`] = value;
       }
       callback(err, value);
     });
