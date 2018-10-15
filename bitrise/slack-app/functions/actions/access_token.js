@@ -1,5 +1,6 @@
 const lib = require('lib')({ token: process.env.STDLIB_TOKEN });
 const request = require('request');
+const storage = require('../../helpers/storage.js');
 
 /**
 * example.js
@@ -18,16 +19,22 @@ const request = require('request');
 * @returns {object}
 */
 module.exports = (user, channel, action = {}, botToken = null, callback) => {
+  let noTokenError = 'No token provided for *Personal access tokens (BETA)*.';
+
   if (action.type == 'dialog_cancellation') {
     return callback(null, {
-      text: 'No token provided for *Personal access tokens (BETA)*.',
+      text: noTokenError,
       attachments: []
     });
   }
 
-  callback(null, {
-    text: '*Personal access tokens (BETA)* updated.',
-    attachments: []
+  storage.setBitriseAppToken(action.team.id, action.submission.token, (err, token) => {
+    callback(null, {
+      text: err ? noTokenError : '*Personal access tokens (BETA)* updated.',
+      attachments: []
+    });
   });
+
+  
 };
 
