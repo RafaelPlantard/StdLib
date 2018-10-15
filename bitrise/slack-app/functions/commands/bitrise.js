@@ -30,6 +30,7 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
         title: 'Personal Access Token',
         submit_label: 'Update',
         notify_on_cancel: true,
+        state: JSON.stringify({ text: text, command: command }),
         elements: [
           {
             type: 'text',

@@ -1,6 +1,7 @@
 const lib = require('lib')({ token: process.env.STDLIB_TOKEN });
 const request = require('request');
 const storage = require('../../helpers/storage.js');
+const bitrise = require('../../functions/commands/bitrise.js');
 
 /**
 * example.js
@@ -29,12 +30,16 @@ module.exports = (user, channel, action = {}, botToken = null, callback) => {
   }
 
   storage.setBitriseAppToken(action.team.id, action.submission.token, (err, token) => {
-    callback(null, {
-      text: err ? noTokenError : '*Personal access tokens (BETA)* updated.',
-      attachments: []
-    });
-  });
+    if (err) {
+      callback(null, {
+        text: noTokenError,
+        attachments: []
+      });
+    }
 
-  
+    let state = JSON.parse(action.state);
+
+    bitrise(user, channel, state.text, state.command, botToken, callback);
+  });
 };
 
