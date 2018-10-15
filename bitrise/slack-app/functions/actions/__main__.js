@@ -19,7 +19,7 @@ const update = require('../../utils/update_message.js');
  *     documentation: https://api.slack.com/docs/message-buttons
  *
  *   You should not need to modify this file to get a basic Slack app running.
- *
+ * @bg empty
  * @returns {object}
  */
 module.exports = (context, callback) => {
