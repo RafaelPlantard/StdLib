@@ -51,7 +51,7 @@ module.exports = {
   },
   getBitriseAppToken: (teamId, callback) => {
     if (CACHE[`${teamId}.bitrise_app_token`]) {
-      return callback(null, CACHE[teamId]);
+      return callback(null, CACHE[`${teamId}.bitrise_app_token`]);
     }
     lib.utils.storage.get(formatBitriseAppToken(teamId), (err, value) => {
       if (!err) {
@@ -70,7 +70,7 @@ module.exports = {
   },
   getBitriseTriggerToken: (teamId, callback) => {
     if (CACHE[`${teamId}.bitrise_trigger_token`]) {
-      return callback(null, CACHE[teamId]);
+      return callback(null, CACHE[`${teamId}.bitrise_trigger_token`]);
     }
     lib.utils.storage.get(formatBitriseTriggerToken(teamId), (err, value) => {
       if (!err) {

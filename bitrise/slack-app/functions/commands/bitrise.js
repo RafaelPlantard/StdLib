@@ -19,7 +19,7 @@ const storage = require('../../helpers/storage.js');
 * @returns {object}
 */
 module.exports = (user, channel, text = 'master', command = {}, botToken = null, callback) => {
-  storage.getBitriseAppToken(command.teamId, (value) => {
+  storage.getBitriseAppToken(command.team_id, (err, token) => {
     if (text.trim().length == 0) {
       text = 'master';
     }
@@ -43,7 +43,7 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
       }
     };
 
-    if (!value) {
+    if (err) {
       return callback(null, setBitriseAppTokenDialog);
     }
 
@@ -51,7 +51,7 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
       url: 'https://api.bitrise.io/v0.1/apps?sort_by=last_build_at',
       method: 'GET',
       headers: {
-        Authorization: `token ${value}`
+        Authorization: `token ${token}`
       },
       json: true
     };
@@ -66,6 +66,10 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
 
       if (body.status == 'error' && body.message != undefined) {
         message = body.message;
+      }
+
+      if (res.statusCode == 401) {
+        return callback(null, setBitriseAppTokenDialog);
       }
 
       var actions = [];
