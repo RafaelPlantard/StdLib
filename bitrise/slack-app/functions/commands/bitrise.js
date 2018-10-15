@@ -81,7 +81,7 @@ module.exports = (user, channel, text = 'master', command = {}, botToken = null,
             name: 'app',
             text: app.title,
             type: 'button',
-            value: JSON.stringify({ branch: text, app_slug: app.slug })
+            value: JSON.stringify({ branch: text, app_slug: app.slug, token: token })
           }
         });
       }

@@ -19,17 +19,24 @@ const yaml = require('js-yaml');
 * @returns {object}
 */
 module.exports = (user, channel, action = {}, botToken = null, callback) => {
-  var value = { branch: 'master', app_slug: '' };
+  let value = {};
 
   if (action.actions[0].value != undefined) {
     value = JSON.parse(action.actions[0].value);
+  }
+
+  if (!value.branch || !value.app_slug || !value.token) {
+    return callback(null, {
+      text: `*Branch name*, *Bitrise's app* and *Bitrise's token* are required.`,
+      attachments: []
+    });
   }
 
   const options = {
     url: `https://api.bitrise.io/v0.1/apps/${value.app_slug}/bitrise.yml`,
     method: 'GET',
     headers: {
-      Authorization: 'token ***REMOVED***'
+      Authorization: `token ${value.token}`
     },
     json: true
   };
