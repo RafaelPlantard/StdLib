@@ -18,25 +18,34 @@ const request = require('request');
 * @returns {object}
 */
 module.exports = (user, channel, action = {}, botToken = null, callback) => {
-  var value = { branch: 'master', app_slug: '', workflow_id: 'test' }
+  let value = {}
 
   if (action.actions[0].value != undefined) {
     value = JSON.parse(action.actions[0].value);
   }
 
+  if (!value.branch || !value.app_slug || !value.token) {
+    return callback(null, {
+      text: `*Branch name*, *Bitrise's app* and *Bitrise's token* are required.`,
+      attachments: []
+    });
+  }
+
   const options = {
-    url: `https://app.bitrise.io/app/${value.app_slug}/build/start.json`,
+    url: `https://api.bitrise.io/v0.1/apps/${value.app_slug}/builds`,
     method: 'POST',
     body: {
       hook_info: { 
-        type: "bitrise",
-        build_trigger_token: ""
+        type: "bitrise"
       },
       build_params: {
         branch: value.branch,
         workflow_id: value.workflow_id
       },
-      triggered_by: "curl"
+      triggered_by: "bitrise_api_doc"
+    },
+    headers: {
+      Authorization: `token ${value.token}`
     },
     json: true
   }
